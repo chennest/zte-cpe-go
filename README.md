@@ -1,62 +1,6 @@
 # zte-cpe-go
 
-[English](#english) | [中文](#中文)
-
----
-
-## 中文
-
-一个用 Go 编写的 ZTE CPE 路由器管理工具和库，支持 ZTE MF289F（GigaCube）和 ZTE G5TS（5G CPE）设备。
-
-本项目是 [zte-cpe-rs](https://github.com/1zun4/zte-cpe-rs) 的 **Go 语言移植版**，原项目由 [Izuna](https://github.com/1zun4) 使用 Rust 编写。所有路由器 API 的逆向工程工作归功于原作者。
-
-### 快速开始
-
-```sh
-# 安装
-go install github.com/chennest/zte-cpe-go@latest
-
-# 查看路由器状态
-zte-cpe status -t g5ts -u http://192.168.0.1 -p 你的密码
-
-# 查看网络信号信息
-zte-cpe network-info -t g5ts -u http://192.168.0.1 -p 你的密码 --pretty
-
-# 查看 SIM 卡信息
-zte-cpe sim-info -t g5ts -u http://192.168.0.1 -p 你的密码 --pretty
-
-# 查看已连接设备
-zte-cpe connected-devices -t g5ts -u http://192.168.0.1 -p 你的密码 --pretty
-```
-
-### 支持的功能
-
-| 功能 | MF289F | G5TS |
-| --- | --- | --- |
-| 重启路由器 | ✅ | ✅ |
-| 获取状态信息 | ✅ | ✅ |
-| 获取设备信息 | ❌ | ✅ |
-| 获取网络/信号信息 | ❌ | ✅ |
-| 获取 SIM 卡信息 | ❌ | ✅ |
-| 连接/断开网络 | ✅ | ✅ |
-| 设置连接模式 | ✅ | ✅ |
-| 设置网络制式 | ✅ | ✅ |
-| 锁定 LTE 频段 | ✅ | ❌ |
-| 设置 DNS | ✅ | ❌ |
-| 配置 UPnP | ✅ | ✅ |
-| 配置 DMZ | ✅ | ✅ |
-| 获取 APN 配置 | ❌ | ✅ |
-| 修改 APN 配置 | ❌ | ✅ |
-| 获取 DHCP 设置 | ❌ | ✅ |
-| 设置 DHCP | ❌ | ✅ |
-| 获取 MTU/MSS 设置 | ❌ | ✅ |
-| 设置 MTU/MSS | ❌ | ✅ |
-| 获取短信设置 | ❌ | ✅ |
-| 获取已连接设备 | ❌ | ✅ |
-
----
-
-## English
+[English](#english) | [中文](./README_zh.md)
 
 A Go CLI tool and library for interacting with ZTE CPE routers, such as the ZTE MF289F and ZTE G5TS.
 
