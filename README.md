@@ -35,6 +35,7 @@ This project is a **Go port** of [zte-cpe-rs](https://github.com/1zun4/zte-cpe-r
 | Set MTU/MSS settings | No | Yes |
 | Get SMS settings | No | Yes |
 | Get connected devices | No | Yes |
+| Prometheus exporter | Yes | Yes |
 
 ## Installation
 
@@ -52,6 +53,8 @@ go build -o zte-cpe .
 
 ## Usage
 
+### CLI Commands
+
 ```sh
 zte-cpe status -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
 zte-cpe version -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
@@ -63,6 +66,59 @@ zte-cpe get-apn -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
 zte-cpe get-dhcp -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
 zte-cpe get-mtu -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
 zte-cpe get-sms-settings -t g5ts -u http://192.168.0.1 -p YOURPASSWORD
+```
+
+### Prometheus Exporter
+
+Start a metrics server that exposes router data to Prometheus:
+
+```sh
+zte-cpe serve -t g5ts -u http://192.168.0.1 -p YOURPASSWORD --listen :9101 --interval 30
+```
+
+All flags can also be set via environment variables:
+
+| Flag | Env Variable | Default |
+| --- | --- | --- |
+| `--type` | `ZTE_TYPE` | *(required)* |
+| `--url` | `ZTE_URL` | *(required)* |
+| `--password` | `ZTE_PASSWORD` | *(required)* |
+| `--listen` | `ZTE_LISTEN` | `:9101` |
+| `--interval` | `ZTE_INTERVAL` | `30` |
+
+**Example metrics output:**
+
+```
+zte_cpe_signal_rsrp_dbm{model="g5ts",network_type="SA"} -82
+zte_cpe_signal_rsrq_db{model="g5ts",network_type="SA"} -11
+zte_cpe_signal_snr_db{model="g5ts",network_type="SA"} 15.5
+zte_cpe_signal_bar{model="g5ts"} 5
+zte_cpe_network_connected{model="g5ts"} 1
+zte_cpe_connected_devices{model="g5ts"} 0
+zte_cpe_device_info{firmware="BD_SEECOMCNG5TSV1.0.0B05",hardware_version="G5TSHW_1.0.0",imei="869338073140877",mac_address="5C:7D:AE:AF:3B:67",model="g5ts",network_type="SA",operator="UNICOM"} 1
+```
+
+### Docker
+
+```sh
+docker build -t zte-cpe-go .
+
+docker run -d --name zte-cpe-exporter \
+  --network host \
+  -e ZTE_TYPE=g5ts \
+  -e ZTE_URL=http://192.168.0.1 \
+  -e ZTE_PASSWORD=YOURPASSWORD \
+  -p 9101:9101 \
+  zte-cpe-go
+```
+
+**Prometheus scrape config:**
+
+```yaml
+scrape_configs:
+  - job_name: 'zte-cpe'
+    static_configs:
+      - targets: ['localhost:9101']
 ```
 
 ### As a Library
