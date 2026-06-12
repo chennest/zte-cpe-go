@@ -45,4 +45,5 @@ func init() {
 	rootCmd.AddCommand(simInfoCmd)
 	rootCmd.AddCommand(deviceInfoCmd)
 	rootCmd.AddCommand(connectedDevicesCmd)
+	rootCmd.AddCommand(serveCmd)
 }
