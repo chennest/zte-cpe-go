@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/1zun4/zte-cpe-go/pkg/exporter"
@@ -20,10 +22,55 @@ var (
 	serveInterval int
 )
 
+func envOrDefault(key, defaultVal string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return defaultVal
+}
+
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start Prometheus metrics server",
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if !cmd.Flags().Changed("type") {
+			if v := os.Getenv("ZTE_TYPE"); v != "" {
+				routerType = v
+			}
+		}
+		if !cmd.Flags().Changed("url") {
+			if v := os.Getenv("ZTE_URL"); v != "" {
+				routerURL = v
+			}
+		}
+		if !cmd.Flags().Changed("password") {
+			if v := os.Getenv("ZTE_PASSWORD"); v != "" {
+				password = v
+			}
+		}
+		if !cmd.Flags().Changed("listen") {
+			if v := os.Getenv("ZTE_LISTEN"); v != "" {
+				serveListen = v
+			}
+		}
+		if !cmd.Flags().Changed("interval") {
+			if v := os.Getenv("ZTE_INTERVAL"); v != "" {
+				if n, err := strconv.Atoi(v); err == nil {
+					serveInterval = n
+				}
+			}
+		}
+
+		if routerType == "" {
+			return fmt.Errorf("router type is required: use --type or ZTE_TYPE env")
+		}
+		if routerURL == "" {
+			return fmt.Errorf("router URL is required: use --url or ZTE_URL env")
+		}
+		if password == "" {
+			return fmt.Errorf("password is required: use --password or ZTE_PASSWORD env")
+		}
+
 		clientFn := func() (router.RouterClient, error) {
 			switch routerType {
 			case "mf289f":
@@ -53,12 +100,9 @@ var serveCmd = &cobra.Command{
 }
 
 func init() {
-	serveCmd.Flags().StringVarP(&routerType, "type", "t", "", "Router type (mf289f or g5ts)")
-	serveCmd.Flags().StringVarP(&routerURL, "url", "u", "", "Router URL (e.g., http://192.168.0.1)")
-	serveCmd.Flags().StringVarP(&password, "password", "p", "", "Router password")
-	serveCmd.Flags().StringVarP(&serveListen, "listen", "l", ":9101", "Listen address for the metrics server")
-	serveCmd.Flags().IntVarP(&serveInterval, "interval", "i", 30, "Scrape interval in seconds")
-	serveCmd.MarkFlagRequired("type")
-	serveCmd.MarkFlagRequired("url")
-	serveCmd.MarkFlagRequired("password")
+	serveCmd.Flags().StringVarP(&routerType, "type", "t", "", "Router type: mf289f or g5ts (env: ZTE_TYPE)")
+	serveCmd.Flags().StringVarP(&routerURL, "url", "u", "", "Router URL, e.g. http://192.168.0.1 (env: ZTE_URL)")
+	serveCmd.Flags().StringVarP(&password, "password", "p", "", "Router password (env: ZTE_PASSWORD)")
+	serveCmd.Flags().StringVarP(&serveListen, "listen", "l", ":9101", "Listen address (env: ZTE_LISTEN)")
+	serveCmd.Flags().IntVarP(&serveInterval, "interval", "i", 30, "Scrape interval in seconds (env: ZTE_INTERVAL)")
 }
