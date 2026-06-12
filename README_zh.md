@@ -59,16 +59,28 @@ zte_cpe_device_info{firmware="BD_SEECOMCNG5TSV1.0.0B05",hardware_version="G5TSHW
 
 ### Docker 部署
 
+预构建镜像可在 GHCR 获取：
+
+```sh
+docker pull ghcr.io/chennest/zte-cpe-go:latest
+```
+
+或从源码构建：
+
 ```sh
 docker build -t zte-cpe-go .
+```
 
+运行：
+
+```sh
 docker run -d --name zte-cpe-exporter \
   --network host \
   -e ZTE_TYPE=g5ts \
   -e ZTE_URL=http://192.168.0.1 \
   -e ZTE_PASSWORD=你的密码 \
   -p 9101:9101 \
-  zte-cpe-go
+  ghcr.io/chennest/zte-cpe-go:latest
 ```
 
 **Prometheus 采集配置：**

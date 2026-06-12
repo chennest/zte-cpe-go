@@ -100,16 +100,28 @@ zte_cpe_device_info{firmware="BD_SEECOMCNG5TSV1.0.0B05",hardware_version="G5TSHW
 
 ### Docker
 
+Pre-built images are available on GHCR:
+
+```sh
+docker pull ghcr.io/chennest/zte-cpe-go:latest
+```
+
+Or build from source:
+
 ```sh
 docker build -t zte-cpe-go .
+```
 
+Run:
+
+```sh
 docker run -d --name zte-cpe-exporter \
   --network host \
   -e ZTE_TYPE=g5ts \
   -e ZTE_URL=http://192.168.0.1 \
   -e ZTE_PASSWORD=YOURPASSWORD \
   -p 9101:9101 \
-  zte-cpe-go
+  ghcr.io/chennest/zte-cpe-go:latest
 ```
 
 **Prometheus scrape config:**
